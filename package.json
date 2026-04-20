@@ -1,0 +1,14 @@
+{
+  "name": "@renewcorp/shared",
+  "version": "1.0.0",
+  "description": "Shared components and Supabase backend for Renewcorp apps",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "peerDependencies": {
+    "@supabase/supabase-js": ">=2.0.0",
+    "expo-router": ">=3.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.73.0"
+  }
+}
