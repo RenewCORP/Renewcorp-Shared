@@ -5,10 +5,16 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./feedback-web": "./src/feedback-web/index.ts"
+  },
   "peerDependencies": {
     "@supabase/supabase-js": ">=2.0.0",
-    "expo-router": ">=3.0.0",
-    "react": ">=18.0.0",
-    "react-native": ">=0.73.0"
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native": { "optional": true },
+    "expo-router": { "optional": true }
   }
 }
