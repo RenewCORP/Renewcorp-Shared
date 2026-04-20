@@ -7,7 +7,9 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
-    "./feedback-web": "./src/feedback-web/index.ts"
+    "./feedback-web": "./src/feedback-web/index.ts",
+    "./rbac": "./src/rbac/index.ts",
+    "./rbac-web": "./src/rbac-web/index.ts"
   },
   "peerDependencies": {
     "@supabase/supabase-js": ">=2.0.0",
