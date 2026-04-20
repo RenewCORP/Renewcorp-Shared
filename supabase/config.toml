@@ -1,0 +1,9 @@
+# Minimal config — just enough for the CLI to find the migrations and functions.
+# No local dev stack config; this repo is source-of-truth only, not a runnable project.
+
+project_id = "renewcorp-shared"
+
+[db]
+# Used only if you run `supabase start` locally (not the typical workflow here).
+port = 54322
+major_version = 15

@@ -1,0 +1,31 @@
+# projects.ps1.example — copy to projects.ps1 and fill in.
+# projects.ps1 is gitignored. NEVER commit real credentials.
+
+# Personal access token — get from https://supabase.com/dashboard/account/tokens
+$AccessToken = "sbp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+# Resend API key — same across all projects (or leave blank if you don't use -SetSecrets)
+$ResendApiKey = "re_XXXXXXXXXXXXXXXXXXXXXXXX"
+
+# One entry per Supabase project.
+#   Ref           — project-ref (from dashboard URL: supabase.com/dashboard/project/<ref>)
+#   DbUrl         — connection string from Dashboard → Project Settings → Database
+#                   → "URI" under "Connection string" (use Transaction pooler for reliability)
+#   AppName       — shown in email subject: "[<AppName>] Bug: ..."
+#   FeedbackEmail — where feedback notification emails are delivered
+$Projects = @(
+  @{
+    Name          = "Outback Explorer"
+    Ref           = "ehqmjmlaiqycouvktofo"
+    DbUrl         = "postgresql://postgres.ehqmjmlaiqycouvktofo:YOUR-DB-PASSWORD@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+    AppName       = "Outback Explorer"
+    FeedbackEmail = "troys@renewcorp.com.au"
+  },
+  @{
+    Name          = "Compass"
+    Ref           = "rmwkarfnzsaohfxwmvjx"
+    DbUrl         = "postgresql://postgres.rmwkarfnzsaohfxwmvjx:YOUR-DB-PASSWORD@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+    AppName       = "Compass"
+    FeedbackEmail = "troys@renewcorp.com.au"
+  }
+)

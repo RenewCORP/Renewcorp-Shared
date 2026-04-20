@@ -1,6 +1,6 @@
 -- ============================================================
--- Feedback system — complete schema
--- Run in Supabase Dashboard → SQL Editor
+-- Feedback system — complete schema (idempotent)
+-- Safe to run against fresh or existing databases.
 -- Requires: profiles table with (id uuid, username text, role text)
 -- ============================================================
 
@@ -19,9 +19,21 @@ CREATE TABLE IF NOT EXISTS feedback (
   created_at     timestamptz NOT NULL DEFAULT now()
 );
 
+-- Safety: add any missing columns on existing tables
+ALTER TABLE feedback ADD COLUMN IF NOT EXISTS is_read        boolean     NOT NULL DEFAULT false;
+ALTER TABLE feedback ADD COLUMN IF NOT EXISTS status         text        NOT NULL DEFAULT 'new';
+ALTER TABLE feedback ADD COLUMN IF NOT EXISTS attachment_url text;
+ALTER TABLE feedback ADD COLUMN IF NOT EXISTS admin_reply    text;
+ALTER TABLE feedback ADD COLUMN IF NOT EXISTS reply_seen     boolean     NOT NULL DEFAULT true;
+
 ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
 
--- ── RLS ───────────────────────────────────────────────────────────────────────
+-- ── RLS policies ──────────────────────────────────────────────────────────────
+DROP POLICY IF EXISTS "feedback: authenticated insert"         ON feedback;
+DROP POLICY IF EXISTS "feedback: authenticated can read"       ON feedback;
+DROP POLICY IF EXISTS "feedback: authenticated can update"     ON feedback;
+DROP POLICY IF EXISTS "feedback: authenticated can update is_read" ON feedback;
+
 CREATE POLICY "feedback: authenticated insert"
   ON feedback FOR INSERT
   WITH CHECK (auth.uid() IS NOT NULL);
@@ -37,10 +49,13 @@ CREATE POLICY "feedback: authenticated can update"
 
 GRANT ALL ON feedback TO authenticated;
 
--- ── Storage bucket ────────────────────────────────────────────────────────────
+-- ── Storage bucket for attachments ────────────────────────────────────────────
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('feedback-attachments', 'feedback-attachments', true)
 ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "feedback-attachments: authenticated upload" ON storage.objects;
+DROP POLICY IF EXISTS "feedback-attachments: public read"           ON storage.objects;
 
 CREATE POLICY "feedback-attachments: authenticated upload"
   ON storage.objects FOR INSERT
@@ -51,7 +66,7 @@ CREATE POLICY "feedback-attachments: public read"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'feedback-attachments');
 
--- ── Trigger: reply_seen ───────────────────────────────────────────────────────
+-- ── Trigger: flip reply_seen=false when admin sets/changes admin_reply ────────
 CREATE OR REPLACE FUNCTION _on_feedback_reply_changed()
 RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
@@ -70,6 +85,8 @@ CREATE TRIGGER feedback_reply_notify
   FOR EACH ROW EXECUTE FUNCTION _on_feedback_reply_changed();
 
 -- ── RPCs ──────────────────────────────────────────────────────────────────────
+DROP FUNCTION IF EXISTS get_all_feedback();
+
 CREATE OR REPLACE FUNCTION get_all_feedback()
 RETURNS TABLE (
   id             uuid,

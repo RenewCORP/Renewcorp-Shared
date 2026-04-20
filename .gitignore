@@ -1,0 +1,13 @@
+# Credentials — never commit
+scripts/projects.ps1
+
+# Supabase CLI runtime
+supabase/.temp/
+supabase/.branches/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
