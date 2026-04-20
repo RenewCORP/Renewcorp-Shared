@@ -17,6 +17,12 @@ import type { FeedbackRow, FeedbackStatus } from './types';
 interface Props {
   supabase: SupabaseClient;
   onBack: () => void;
+  /**
+   * Optional admin-gate override. If provided, skips the internal
+   * `profiles.role` query. Pass your app's own role check result.
+   * If omitted, falls back to checking `profiles.role === 'admin'`.
+   */
+  isAdmin?: boolean;
 }
 
 function CategoryBadge({ category }: { category: FeedbackRow['category'] }) {
@@ -65,7 +71,7 @@ function sortItems(items: FeedbackRow[]): FeedbackRow[] {
   });
 }
 
-export function FeedbackAdminScreen({ supabase, onBack }: Props) {
+export function FeedbackAdminScreen({ supabase, onBack, isAdmin: isAdminProp }: Props) {
   const [items, setItems] = useState<FeedbackRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,15 +93,21 @@ export function FeedbackAdminScreen({ supabase, onBack }: Props) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { onBack(); return; }
 
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
+      let authorized: boolean;
+      if (typeof isAdminProp === 'boolean') {
+        authorized = isAdminProp;
+      } else {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        authorized = profileData?.role === 'admin';
+      }
 
       if (cancelled) return;
 
-      if (profileData?.role !== 'admin') {
+      if (!authorized) {
         setIsAdmin(false);
         setLoading(false);
         return;
