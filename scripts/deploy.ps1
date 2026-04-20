@@ -17,7 +17,10 @@ param(
   [switch]$SetSecrets
 )
 
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = 'Continue'
+# 'Continue' not 'Stop' so Supabase CLI progress messages on stderr
+# don't get treated as script-terminating errors. We check $LASTEXITCODE
+# explicitly after each supabase invocation.
 
 $repoRoot   = Split-Path $PSScriptRoot -Parent
 $configPath = Join-Path $PSScriptRoot "projects.ps1"
