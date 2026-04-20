@@ -6,4 +6,4 @@ project_id = "renewcorp-shared"
 [db]
 # Used only if you run `supabase start` locally (not the typical workflow here).
 port = 54322
-major_version = 15
+major_version = 17

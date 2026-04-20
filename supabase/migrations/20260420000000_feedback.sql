@@ -1,10 +1,28 @@
 -- ============================================================
 -- Feedback system — complete schema (idempotent)
 -- Safe to run against fresh or existing databases.
--- Requires: profiles table with (id uuid, username text, role text)
+-- Creates its own minimal profiles table if one doesn't already exist.
 -- ============================================================
 
--- ── Table ─────────────────────────────────────────────────────────────────────
+-- ── Profiles table (minimum needed by feedback — existing tables untouched) ──
+CREATE TABLE IF NOT EXISTS profiles (
+  id       uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username text,
+  role     text
+);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS username text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS role     text;
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "profiles: self can read role" ON profiles;
+CREATE POLICY "profiles: self can read role"
+  ON profiles FOR SELECT
+  USING (auth.uid() = id);
+
+GRANT SELECT ON profiles TO authenticated;
+
+-- ── Feedback table ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS feedback (
   id             uuid        PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id        uuid        REFERENCES auth.users(id) ON DELETE SET NULL,

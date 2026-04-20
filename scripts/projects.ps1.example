@@ -8,23 +8,22 @@ $AccessToken = "sbp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 $ResendApiKey = "re_XXXXXXXXXXXXXXXXXXXXXXXX"
 
 # One entry per Supabase project.
-#   Ref           — project-ref (from dashboard URL: supabase.com/dashboard/project/<ref>)
-#   DbUrl         — connection string from Dashboard → Project Settings → Database
-#                   → "URI" under "Connection string" (use Transaction pooler for reliability)
-#   AppName       — shown in email subject: "[<AppName>] Bug: ..."
-#   FeedbackEmail — where feedback notification emails are delivered
+#   Ref           - project-ref (from dashboard URL: supabase.com/dashboard/project/<ref>)
+#   DbPassword    - database password (Dashboard -> Database -> Database password -> Reset if unknown)
+#   AppName       - shown in email subject: "[<AppName>] Bug: ..."
+#   FeedbackEmail - where feedback notification emails are delivered
 $Projects = @(
   @{
     Name          = "Outback Explorer"
     Ref           = "ehqmjmlaiqycouvktofo"
-    DbUrl         = "postgresql://postgres.ehqmjmlaiqycouvktofo:YOUR-DB-PASSWORD@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+    DbPassword    = "YOUR-DB-PASSWORD"
     AppName       = "Outback Explorer"
     FeedbackEmail = "troys@renewcorp.com.au"
   },
   @{
     Name          = "Compass"
     Ref           = "rmwkarfnzsaohfxwmvjx"
-    DbUrl         = "postgresql://postgres.rmwkarfnzsaohfxwmvjx:YOUR-DB-PASSWORD@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+    DbPassword    = "YOUR-DB-PASSWORD"
     AppName       = "Compass"
     FeedbackEmail = "troys@renewcorp.com.au"
   }
