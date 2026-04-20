@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { FeedbackStatus } from '../feedback/types';
 
@@ -46,7 +46,7 @@ export function FeedbackUserPanel({ supabase }: Props) {
     const items = (data ?? []) as MyFeedback[];
     setMyFeedback(items);
     items.filter(i => !i.reply_seen && i.admin_reply).forEach((i) => {
-      supabase.rpc('mark_reply_seen', { p_feedback_id: i.id }).catch(() => {});
+      supabase.rpc('mark_reply_seen', { p_feedback_id: i.id }).then(() => {}, () => {});
     });
   }, [supabase]);
 
